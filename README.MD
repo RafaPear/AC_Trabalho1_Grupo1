@@ -31,9 +31,8 @@ Este repositório contém o trabalho 1 da disciplina de Arquitetura de Computado
     ```
 
 ## Contribuidores
-- Nome do Aluno 1
-- Nome do Aluno 2
-- Nome do Aluno 3
+- Rafael Pereira
+- Gustavo Costa
 
 ## Licença
 Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
