@@ -25,9 +25,9 @@ uint32_t umull32(uint32_t M, uint32_t m) {
     return result;
 }
 
-int main(void) {
-    uint32_t M = 2;
-    uint32_t m = 2;
+int main(int argc, char *argv[]) {
+    uint32_t M = (uint32_t)argv[0];
+    uint32_t m = (uint32_t)argv[1];
     uint32_t result = umull32(M, m);
     printf("result: %d\n", result);
     return 0;
