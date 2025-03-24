@@ -1,0 +1,145 @@
+P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\cena.lst	Mon Mar 24 00:56:59 2025
+
+Sections
+Index   Name            Address   Size
+0       .text           0000      009E 158
+
+Symbols
+Name                    Type      Value       Section
+else_if                 LABEL     001A 26     .text
+end_else_if             LABEL     0030 48     .text
+end_if                  LABEL     0016 22     .text
+if                      LABEL     0002 2      .text
+main                    LABEL     0094 148    .text
+umull32                 LABEL     0064 100    .text
+while                   LABEL     0036 54     .text
+while_begin             LABEL     0032 50     .text
+while_end               LABEL     0062 98     .text
+while_extra             LABEL     0056 86     .text
+
+Code listing
+   1 0000 49 58	B main
+   2           	
+   3           	if:
+   4 0002 06 60	    MOV R6, #0
+   5 0004 60 BD	    CMP R6, R10
+   6 0006 14 44	    BNE end_else_if
+   7 0008 E0 BC	    CMP R6, R9
+   8 000A 12 44	    BNE end_else_if
+   9 000C 16 60	    MOV R6, #1
+  10 000E 40 BB	    CMP R4, R6
+  11 0010 0F 44	    BNE end_else_if
+  12           	
+  13 0012 97 83	    ADD R7, R1, R7
+  14           	
+  15 0014 00 58	    B end_if
+  16           	
+  17           	end_if:
+  18 0016 06 B7	    MOV R6, LR
+  19 0018 6F A1	    ADD PC, R6, #2
+  20           	
+  21           	else_if:
+  22 001A 16 60	    MOV R6, #1
+  23 001C 60 BD	    CMP R6, R10
+  24 001E 08 44	    BNE end_else_if
+  25 0020 06 60	    MOV R6, #0
+  26 0022 E0 BC	    CMP R6, R9
+  27 0024 05 44	    BNE end_else_if
+  28 0026 40 BB	    CMP R4, R6
+  29 0028 03 44	    BNE end_else_if
+  30           	
+  31 002A 86 B3	    MOV R6, R7
+  32 002C E7 88	    SUB R7, R6, R1
+  33 002E 00 58	    B end_else_if
+  34           	
+  35           	end_else_if:
+  36 0030 0F B7	    MOV PC, LR
+  37           	
+  38           	while_begin:
+  39 0032 0E 24	    PUSH LR
+  40 0034 00 58	    B while
+  41           	
+  42           	while:
+  43 0036 06 61	    MOV R6, #16
+  44 0038 50 BB	    CMP R5, R6
+  45 003A 13 40	    BEQ while_end
+  46           	    ; R9 é sempre zero lol
+  47 003C 09 60	    MOV R9, #0
+  48 003E 16 60	    MOV R6, #1
+  49 0040 6A C4	    AND R10, R6, R8
+  50 0042 DF 5F	    BL if
+  51 0044 EA 5F	    BL else_if
+  52 0046 D5 A0	    ADD R5, R5, #1
+  53           	
+  54           	    ; p_1 = result&1
+  55 0048 16 60	    MOV R6, #1
+  56 004A 64 C4	    AND R4, R6, R8
+  57           	
+  58           	    ; result = result >> 1
+  59 004C 06 B4	    MOV R6, R8
+  60 004E F7 F0	    ASR R7, R7, #1
+  61 0050 02 48	    BCS while_extra
+  62 0052 E8 E8	    LSR R8, R6, #1
+  63           	
+  64 0054 F0 5B	    B while
+  65           	
+  66           	while_extra:
+  67 0056 06 B4	    MOV R6, R8
+  68 0058 E8 E8	    LSR R8, R6, #1
+  69 005A 16 60	    MOV R6, #1
+  70 005C E6 E7	    LSL R6, R6, #15
+  71 005E 68 84	    ADD R8, R6, R8
+  72 0060 EA 5B	    B while
+  73           	
+  74           	while_end:
+  75 0062 0F 04	    POP PC
+  76           	
+  77           	umull32:
+  78 0064 0E 24	    PUSH LR
+  79 0066 04 24	    PUSH R4
+  80 0068 05 24	    PUSH R5
+  81 006A 06 24	    PUSH R6
+  82 006C 07 24	    PUSH R7
+  83 006E 08 24	    PUSH R8
+  84 0070 09 24	    PUSH R9
+  85 0072 0A 24	    PUSH R10
+  86           	    ; -------- IN --------
+  87           	    ; R0, R1 => M
+  88           	    ; R2, R3 => m
+  89           	    ;
+  90           	    ; ----- INTERNAL -----
+  91           	    ; R4 => P_1
+  92           	    ; R5 => i
+  93           	    ; R6 => TEMP
+  94           	    ; R7 => Result [<]
+  95           	    ; R8 => Result [>]
+  96           	    ; R9 => AND [<]
+  97           	    ; R10 => AND [>]
+  98           	
+  99 0074 04 60	    MOV R4, #0 ; Cria p_1 = 0
+ 100 0076 05 60	    MOV R5, #0 ; i
+ 101 0078 16 60	    MOV R6, #1 ; Literal 1 ou 0 para operações
+ 102 007A 07 B1	    MOV R7, R2 ; Lado Esquerdo do Resultado
+ 103 007C 88 B1	    MOV R8, R3 ; Lado Direito do Resultado
+ 104           	
+ 105 007E D9 5F	    BL while_begin
+ 106           	
+ 107 0080 80 B3	    MOV R0, R7
+ 108 0082 01 B4	    MOV R1, R8
+ 109           	    
+ 110 0084 0A 04	    POP R10
+ 111 0086 09 04	    POP R9
+ 112 0088 08 04	    POP R8
+ 113 008A 07 04	    POP R7
+ 114 008C 06 04	    POP R6
+ 115 008E 05 04	    POP R5
+ 116 0090 04 04	    POP R4
+ 117 0092 0F 04	    POP PC
+ 118           	
+ 119           	main:
+ 120 0094 00 60	    MOV R0, #0
+ 121 0096 91 60	    MOV R1, #9
+ 122 0098 02 60	    MOV R2, #0
+ 123 009A 93 60	    MOV R3, #9
+ 124 009C E3 5F	    BL umull32
+ 124           	    

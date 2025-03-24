@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #define N 5
+#define MAX_RAND_VALUE 0x7FFFFFFF
 
 uint16_t result[N] = {17747, 2055, 3664, 15611, 9816};
 
@@ -9,19 +10,19 @@ uint32_t seed = 1;
 
 uint32_t umull32(uint32_t M, uint32_t m) {
     int64_t M_ext = M;
-    int64_t p = m;
+    int64_t result = m;
     uint8_t p_1 = 0;
 
     for (uint16_t i = 0; i < 32; i++) {
-        if ((p & 0x1) == 0 && p_1 == 1) {
-            p += M_ext << 32;
-        } else if ((p & 0x1) == 1 && p_1 == 0) {
-            p -= M_ext << 32;
+        if ((result & 0x1) == 0 && p_1 == 1) {
+            result += M_ext << 32;
+        } else if ((result & 0x1) == 1 && p_1 == 0) {
+            result -= M_ext << 32;
         }
-        p_1 = p & 0x1;
-        p >>= 1;
+        p_1 = result & 0x1;
+        result >>= 1;
     }
-    return p;
+    return result;
 }
 
 void srand(uint32_t nseed) {
@@ -29,7 +30,7 @@ void srand(uint32_t nseed) {
 }
 
 uint16_t rand(void) {
-    seed = (umull32(seed, 214013) + 2531011) % 4294967296;
+    seed = (umull32(seed, 214013) + 2531011) % MAX_RAND_VALUE;
     return (seed >> 16);
 }
 
