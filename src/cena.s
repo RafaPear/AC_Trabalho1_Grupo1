@@ -1,3 +1,5 @@
+.text
+
 B main
 
 if:
@@ -96,3 +98,82 @@ main:
     MOV R3, #50
     BL umull32
     
+; nseed -> R0 e R1
+; seed_addr -> R4
+srand:
+    PUSH R4
+    LDR R4, seed_addr
+    STR R0, [R4]
+    STR R1, [R4, #2]
+    POP R4
+    MOV PC, LR
+
+rand:
+    PUSH LR
+    PUSH R0
+    PUSH R1
+    PUSH R2
+    PUSH R3
+    PUSH R4
+    ; seed atual (32 bits) -> R0 e R1
+    LDR R4, seed_addr
+    LDR R0, [R4]    ; Parte inferior
+    LDR R1, [R4, #2]    ; Parte superior
+
+    ; prepara para umull32: seed * 214013
+    ; 214013 = 0x000343FD (32 bits)
+    MOV R2, #0x43FD   ; Parte inferior
+    MOV R3, #0x0003   ; Parte superior
+    BL umull32  ; seed * 214013
+
+    ; adiciona 2531011 (0x00269EC3) ao resultado
+    ; para 64 bits, é preciso carry
+    ADD R0, R0, #0x9EC3     ; + parte inferior
+    ADC R1, R1, #0x0026     ; + parte superior com carry
+
+    ; atualiza seed
+    LDR R4, seed_addr
+    STR R0, [R4]    ; Parte inferior
+    STR R1, [R4, #2]    ; Parte superior
+
+    ; retorna o resultado (seed >> 16)
+    MOV R0, R1      ; retorna os 16 bits superiores
+
+    POP R4
+    POP R3
+    POP R2
+    POP R1
+
+    ADD SP, SP, #2  ; SP += 2 (para pular o LR)
+    POP PC          ; retorna
+
+seed_addr:
+    .word seed
+
+.data
+
+N:  
+    .word 5
+
+result: 
+    .word 17747
+    .word 2055
+    .word 3664
+    .word 15611
+    .word 9816
+
+seed:
+    .word 1     ; LSB
+    .word 0     ; MSB
+    
+/*
+214013:
+    .word 0x43FD    ; Parte inferior
+    .word 0x0003    ; Parte superior
+*/
+/*
+2531011:
+    .word 0x9EC3    ; Parte inferior
+    .word 0x0026    ; Parte superior
+*/
+; verificar RAND_MAX para 32 bits (0xFFFFFFFF), como fica?
