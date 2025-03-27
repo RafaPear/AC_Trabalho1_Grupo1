@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #define N 5
-#define MAX_RAND_VALUE 0x7FFFFFFF
+#define MAX_RAND_VALUE 0xFFFFFFFF
 
 uint16_t result[N] = {17747, 2055, 3664, 15611, 9816};
 
@@ -35,17 +35,18 @@ uint16_t rand(void) {
 }
 
 int main(void) {
+
     uint8_t error = 0;
     uint16_t rand_number;
     uint16_t i;
 
-    srand(1234);
+    srand(5423);
     for (i = 0; error == 0 && i < N; i++) {
         rand_number = rand();
-        printf("rand_number: %d\n", rand_number);
         if (rand_number != result[i]) {
             error = 1;
         }
+        printf("rand_number: %d\n", rand_number);
     }
     return error;
 }

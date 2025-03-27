@@ -1,215 +1,273 @@
-P16 assembler v1.5 (Feb  9 2024)	c:\Users\gusta\Desktop\ac\1.�trabalho\AC_Trabalho1_Grupo1\src\cena.lst	Wed Mar 26 17:46:35 2025
+P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\cena.lst	Wed Mar 26 23:35:10 2025
 
 Sections
 Index   Name            Address   Size
-0       .text           0000      00B6 182
-1       .data           00B6      0012 18
+0       .text           0000      00FE 254
+1       .data           00FE      0012 18
 
 Symbols
 Name                    Type      Value       Section
-else_if                 LABEL     0016 22     .text
-end_else_if             LABEL     0026 38     .text
-end_if                  LABEL     0012 18     .text
-if                      LABEL     0002 2      .text
-main                    LABEL     00AA 170    .text
-N                       LABEL     00B6 182    .data
-rand                    LABEL     0072 114    .text
-RAND_MAX                LABEL     00C6 198    .data
-result                  LABEL     00B8 184    .data
-seed                    LABEL     00C2 194    .data
-seed_addr               LABEL     00B4 180    .text
-srand                   LABEL     0066 102    .text
-umull32                 LABEL     004C 76     .text
-while                   LABEL     002C 44     .text
-while_begin             LABEL     0028 40     .text
-while_end               LABEL     004A 74     .text
+main                    LABEL     00F2 242    .text
+N                       LABEL     00FE 254    .data
+rand                    LABEL     00BA 186    .text
+RAND_MAX                LABEL     010E 270    .data
+result                  LABEL     0100 256    .data
+seed                    LABEL     010A 266    .data
+seed_addr               LABEL     00FC 252    .text
+srand                   LABEL     00AE 174    .text
+umull32                 LABEL     0082 130    .text
+umull32_else_if         LABEL     0030 48     .text
+umull32_end_if          LABEL     005E 94     .text
+umull32_if              LABEL     0002 2      .text
+umull32_while           LABEL     0064 100    .text
+umull32_while_begin     LABEL     0060 96     .text
+umull32_while_end       LABEL     0080 128    .text
 
 Code listing
    1           	.text
    2           	
-   3 0000 54 58	B main
-   4           	
-   5           	if:
-   6 0002 05 60	    MOV R5, #0
-   7 0004 50 BB	    CMP R5, R6
-   8 0006 0F 44	    BNE end_else_if
-   9 0008 15 60	    MOV R5, #1
-  10 000A C0 BA	    CMP R4, R5
-  11 000C 0C 44	    BNE end_else_if
-  12           	
-  13 000E 12 81	    ADD R2, R1, R2
-  14           	
-  15 0010 00 58	    B end_if
-  16           	
-  17           	end_if:
-  18 0012 05 B7	    MOV R5, LR
-  19 0014 5F A1	    ADD PC, R5, #2
-  20           	
-  21           	else_if:
-  22 0016 15 60	    MOV R5, #1
-  23 0018 50 BB	    CMP R5, R6
-  24 001A 05 44	    BNE end_else_if
-  25 001C 05 60	    MOV R5, #0
-  26 001E C0 BA	    CMP R4, R5
-  27 0020 02 44	    BNE end_else_if
+   3 0000 78 58	B main
+   4           	    
+   5           	
+   6           	
+   7           	umull32_if:
+   8           	    ;   \/ R7 for comparison with 0
+   9 0002 07 60	    MOV R7, #0
+  10           	
+  11           	    ; Compare R5&1 == 0
+  12 0004 18 60	    MOV R8, #1
+  13 0006 58 C4	    AND R8, R5, R8 ; R5 and 1 => R8
+  14 0008 70 BC	    CMP R7, R8 ; R5 and 1 == 0
+  15 000A 12 44	    BNE umull32_else_if
+  16           	    
+  17           	    ; Compare R4&1 == 0
+  18 000C 18 60	    MOV R8, #1
+  19 000E 48 C4	    AND R8, R4, R8 ; R4 and 1 => R8
+  20 0010 70 BC	    CMP R7, R8 ; R4 and 1 == 0
+  21 0012 0E 44	    BNE umull32_else_if
+  22           	
+  23           	    ; Compare R3&1 == 0
+  24 0014 18 60	    MOV R8, #1
+  25 0016 38 C4	    AND R8, R3, R8 ; R3 and 1 => R8
+  26 0018 70 BC	    CMP R7, R8 ; R3 and 1 == 0
+  27 001A 0A 44	    BNE umull32_else_if
   28           	
-  29 0022 A2 88	    SUB R2, R2, R1
-  30 0024 00 58	    B end_else_if
-  31           	
-  32           	end_else_if:
-  33 0026 0F B7	    MOV PC, LR
+  29           	    ; Compare R2&1 == 0
+  30 001C 18 60	    MOV R8, #1
+  31 001E 28 C4	    AND R8, R2, R8 ; R2 and 1 => R8
+  32 0020 70 BC	    CMP R7, R8 ; R2 and 1 == 0
+  33 0022 06 44	    BNE umull32_else_if
   34           	
-  35           	while_begin:
-  36 0028 0E 24	    PUSH LR
-  37 002A 00 58	    B while
-  38           	
-  39           	while:
-  40 002C 06 61	    MOV R6, #16
-  41 002E 50 BB	    CMP R5, R6
-  42 0030 0C 40	    BEQ while_end
-  43           	    
-  44 0032 05 24	    PUSH R5
-  45           	    
-  46 0034 15 60	    MOV R5, #1
-  47 0036 D6 C1	    AND R6, R5, R3
-  48           	    
-  49 0038 E4 5F	    BL if
-  50 003A ED 5F	    BL else_if
-  51           	    ; p_1 = result&1
-  52 003C 15 60	    MOV R5, #1
-  53 003E D4 C1	    AND R4, R5, R3
+  35           	    ; Compare p_1 == 1
+  36 0024 18 60	    MOV R8, #1
+  37 0026 60 BC	    CMP R6, R8 ; R6 == 1
+  38 0028 03 44	    BNE umull32_else_if
+  39           	
+  40 002A 93 81	    ADD R3, R1, R3
+  41 002C 02 91	    ADC R2, R0, R2
+  42           	
+  43 002E 17 58	    B umull32_end_if
+  44           	
+  45           	umull32_else_if:
+  46           	;   \/ R7 for comparison with 1
+  47 0030 07 60	    MOV R7, #0
+  48           	
+  49           	    ; Compare R2&1 == 0
+  50 0032 18 60	    MOV R8, #1
+  51 0034 28 C4	    AND R8, R2, R8 ; R2 and 1 => R8
+  52 0036 70 BC	    CMP R7, R8 ; R2 and 1 == 0
+  53 0038 12 44	    BNE umull32_end_if
   54           	
-  55 0040 05 04	    POP R5
-  56           	
-  57 0042 D5 A0	    ADD R5, R5, #1
-  58           	    ; result = result >> 1
-  59 0044 A2 F0	    ASR R2, R2, #1
-  60 0046 33 D8	    RRX R3, R3
-  61 0048 F1 5B	    B while
-  62           	
-  63           	
-  64           	while_end:
-  65 004A 0F 04	    POP PC
+  55           	    ; Compare R3&1 == 0
+  56 003A 18 60	    MOV R8, #1
+  57 003C 38 C4	    AND R8, R3, R8 ; R3 and 1 => R8
+  58 003E 70 BC	    CMP R7, R8 ; R3 and 1 == 0
+  59 0040 0E 44	    BNE umull32_end_if
+  60           	    
+  61           	    ; Compare R4&1 == 0
+  62 0042 18 60	    MOV R8, #1
+  63 0044 48 C4	    AND R8, R4, R8 ; R4 and 1 => R8
+  64 0046 70 BC	    CMP R7, R8 ; R4 and 1 == 0
+  65 0048 0A 44	    BNE umull32_end_if
   66           	
-  67           	umull32:
-  68 004C 0E 24	    PUSH LR
-  69 004E 04 24	    PUSH R4
-  70 0050 05 24	    PUSH R5
-  71 0052 06 24	    PUSH R6
-  72           	    ; -------- IN --------
-  73           	    ; R0, R1 => M
-  74           	    ; R2, R3 => m
-  75           	    ;
-  76           	    ; ----- INTERNAL -----
-  77           	    ; R4 => P_1
-  78           	    ; R5 => i/TEMP
-  79           	    ; R6 => AND [>]
-  80           	    
-  81 0054 04 60	    MOV R4, #0 ; p_1 = 0
-  82 0056 05 60	    MOV R5, #0 ; i = 0
+  67           	    ;   \/ R7 for comparison with 1
+  68 004A 17 60	    MOV R7, #1
+  69           	    
+  70           	    ; Compare R5&1 == 1
+  71 004C 18 60	    MOV R8, #1
+  72 004E 58 C4	    AND R8, R5, R8 ; R5 and 1 => R8
+  73 0050 70 BC	    CMP R7, R8 ; R5 and 1 == 1
+  74 0052 05 44	    BNE umull32_end_if
+  75           	
+  76           	    ; Compare p_1 == 0
+  77 0054 08 60	    MOV R8, #0
+  78 0056 60 BC	    CMP R6, R8 ; R6 == 0
+  79 0058 02 44	    BNE umull32_end_if
+  80           	
+  81 005A B3 88	    SUB R3, R3, R1
+  82 005C 22 98	    SBC R2, R2, R0
   83           	
-  84 0058 E7 5F	    BL while_begin
-  85           	
-  86 005A 00 B1	    MOV R0, R2
-  87 005C 81 B1	    MOV R1, R3
-  88           	    
-  89 005E 06 04	    POP R6
-  90 0060 05 04	    POP R5
-  91 0062 04 04	    POP R4
-  92 0064 0F 04	    POP PC
-  93           	
-  94           	; nseed -> R0 e R1
-  95           	; seed_addr -> R4
-  96           	srand:
-  97 0066 04 24	    PUSH R4
-  98 0068 54 0E	    LDR R4, seed_addr
-  99 006A 40 20	    STR R0, [R4]
- 100 006C 41 21	    STR R1, [R4, #4]
- 101 006E 04 04	    POP R4
- 102 0070 0F B7	    MOV PC, LR
+  84           	umull32_end_if:
+  85 005E 0F B7	    MOV PC, LR
+  86           	
+  87           	umull32_while_begin:
+  88 0060 07 60	    MOV R7, #0 ; i = 0
+  89 0062 0E 24	    PUSH LR
+  90           	
+  91           	umull32_while:
+  92 0064 08 62	    MOV R8, #32
+  93 0066 70 BC	    CMP R7, R8
+  94 0068 0B 40	    BEQ umull32_while_end
+  95           	
+  96 006A 07 24	    PUSH R7 ; Usar o índice como complemento à variável temporária.
+  97 006C CA 5F	    BL umull32_if
+  98 006E 07 04	    POP R7
+  99           	
+ 100           	    ; p_1 = result&1
+ 101 0070 18 60	    MOV R8, #1
+ 102 0072 56 C4	    AND R6, R5, R8
  103           	
- 104           	rand:
- 105 0072 0E 24	    PUSH LR
- 106 0074 00 24	    PUSH R0
- 107 0076 01 24	    PUSH R1
- 108 0078 02 24	    PUSH R2
- 109 007A 03 24	    PUSH R3
- 110 007C 04 24	    PUSH R4
- 111           	    ; seed atual (32 bits) -> R0 e R1
- 112 007E A4 0D	    LDR R4, seed_addr
- 113 0080 40 00	    LDR R0, [R4]    ; Parte inferior
- 114 0082 41 01	    LDR R1, [R4, #4]    ; Parte superior
+ 104           	    ; result = result >> 1
+ 105 0074 A2 F0	    ASR R2, R2, #1
+ 106 0076 33 D8	    RRX R3, R3
+ 107 0078 44 D8	    RRX R4, R4
+ 108 007A 55 D8	    RRX R5, R5
+ 109           	
+ 110 007C F7 A0	    ADD R7, R7, #1 ; Incremento (i++)
+ 111 007E F2 5B	    B umull32_while
+ 112           	
+ 113           	umull32_while_end:
+ 114 0080 0F 04	    POP PC
  115           	
- 116           	    ; prepara para umull32: seed * 214013
- 117           	    ; 214013 = 0x000343FD (32 bits)
- 118 0084 D2 6F	    MOV R2, #0xFD   ; Parte inferior
- 119 0086 32 74	    MOVT R2, #0x43  ; Parte superior
- 120 0088 33 60	    MOV R3, #0x03   ; Parte inferior
- 121 008A E0 5F	    BL umull32  ; seed * 214013
- 122           	
- 123           	    ; adiciona 2531011 (0x00269EC3) ao resultado
- 124           	    ; para 64 bits, é preciso carry
- 125 008C 32 6C	    MOV R2, #0xC3   ; Parte inferior
- 126 008E E2 79	    MOVT R2, #0x9E  ; Parte superior
- 127 0090 63 62	    MOV R3, #0x26   ; Parte inferior
- 128 0092 00 81	    ADD R0, R0, R2
- 129 0094 91 91	    ADC R1, R1, R3
- 130           	
- 131           	    ; atualiza seed
- 132 0096 E4 0C	    LDR R4, seed_addr
- 133 0098 40 20	    STR R0, [R4]    ; Parte inferior
- 134 009A 41 21	    STR R1, [R4, #4]    ; Parte superior
- 135           	
- 136           	    ; retorna o resultado (seed >> 16)
- 137 009C 80 B0	    MOV R0, R1      ; retorna os 16 bits superiores
- 138           	
- 139 009E 04 04	    POP R4
- 140 00A0 03 04	    POP R3
- 141 00A2 02 04	    POP R2
- 142 00A4 01 04	    POP R1
- 143 00A6 00 04	    POP R0
- 144 00A8 0F 04	    POP PC          ; retorna
- 145           	
- 146           	main:
- 147 00AA 00 60	    MOV R0, #0
- 148 00AC 21 63	    MOV R1, #50
- 149 00AE 02 60	    MOV R2, #0
- 150 00B0 23 63	    MOV R3, #50
- 151 00B2 CC 5F	    BL umull32
- 152           	
- 153           	seed_addr:
- 154 00B4 C2 00	    .word seed
+ 116           	umull32:
+ 117 0082 0E 24	    PUSH LR
+ 118 0084 04 24	    PUSH R4
+ 119 0086 05 24	    PUSH R5
+ 120 0088 06 24	    PUSH R6
+ 121 008A 07 24	    PUSH R7
+ 122 008C 08 24	    PUSH R8
+ 123           	    ; -------- IN --------
+ 124           	    ; R0, R1 => M
+ 125           	    ; R2, R3 => m
+ 126           	    ;
+ 127           	    ; ------- OUT -------
+ 128           	    ; R0, R1, R2, R3 => p
+ 129           	    ;
+ 130           	    ; ----- INTERNAL -----
+ 131           	    ; R2, R3, R4, R5 => Resultado
+ 132           	    ; R6 => p_1
+ 133           	    ; R7 => i/TEMP
+ 134           	    
+ 135 008E 85 B1	    MOV R5, R3
+ 136 0090 04 B1	    MOV R4, R2
+ 137 0092 03 60	    MOV R3, #0
+ 138 0094 02 60	    MOV R2, #0
+ 139           	
+ 140 0096 06 60	    MOV R6, #0 ; p_1 = 0
+ 141           	
+ 142 0098 E3 5F	    BL umull32_while_begin
+ 143           	
+ 144 009A 00 B1	    MOV R0, R2
+ 145 009C 81 B1	    MOV R1, R3
+ 146 009E 02 B2	    MOV R2, R4
+ 147 00A0 83 B2	    MOV R3, R5
+ 148           	    
+ 149 00A2 08 04	    POP R8
+ 150 00A4 07 04	    POP R7
+ 151 00A6 06 04	    POP R6
+ 152 00A8 05 04	    POP R5
+ 153 00AA 04 04	    POP R4
+ 154 00AC 0F 04	    POP PC
  155           	
- 156           	.data
- 157           	
- 158           	N:  
- 159 00B6 05 00	    .word 5
- 160           	
- 161           	result: 
- 162 00B8 53 45	    .word 17747
- 163 00BA 07 08	    .word 2055
- 164 00BC 50 0E	    .word 3664
- 165 00BE FB 3C	    .word 15611
- 166 00C0 58 26	    .word 9816
- 167           	
- 168           	seed:
- 169 00C2 01 00	    .word 1     ; LSB
- 170 00C4 00 00	    .word 0     ; MSB
- 171           	    
- 172           	/*
- 173           	214013:
- 174           	    .word 0x43_FD    ; Parte inferior
- 175           	    .word 0x00_03    ; Parte superior
- 176           	*/
- 177           	/*
- 178           	2531011:
- 179           	    .word 0x9E_C3    ; Parte inferior
- 180           	    .word 0x00_26    ; Parte superior
- 181           	*/
- 182           	; verificar RAND_MAX para 32 bits (0xFFFFFFFF), como fica?
- 183           	RAND_MAX:
- 184 00C6 FF FF	    .word 0xFFFF
- 185           	
- 186           	    
- 187           	
- 187           	
+ 156           	; nseed -> R0 e R1
+ 157           	; seed_addr -> R4
+ 158           	srand:
+ 159 00AE 04 24	    PUSH R4
+ 160 00B0 54 0E	    LDR R4, seed_addr
+ 161 00B2 40 20	    STR R0, [R4]
+ 162 00B4 41 21	    STR R1, [R4, #4]
+ 163 00B6 04 04	    POP R4
+ 164 00B8 0F B7	    MOV PC, LR
+ 165           	
+ 166           	rand:
+ 167 00BA 0E 24	    PUSH LR
+ 168 00BC 00 24	    PUSH R0
+ 169 00BE 01 24	    PUSH R1
+ 170 00C0 02 24	    PUSH R2
+ 171 00C2 03 24	    PUSH R3
+ 172 00C4 04 24	    PUSH R4
+ 173           	    ; seed atual (32 bits) -> R0 e R1
+ 174 00C6 A4 0D	    LDR R4, seed_addr
+ 175 00C8 40 00	    LDR R0, [R4]    ; Parte inferior
+ 176 00CA 41 01	    LDR R1, [R4, #4]    ; Parte superior
+ 177           	
+ 178           	    ; prepara para umull32: seed * 214013
+ 179           	    ; 214013 = 0x000343FD (32 bits)
+ 180 00CC D2 6F	    MOV R2, #0xFD   ; Parte inferior
+ 181 00CE 32 74	    MOVT R2, #0x43  ; Parte superior
+ 182 00D0 33 60	    MOV R3, #0x03   ; Parte inferior
+ 183 00D2 D7 5F	    BL umull32  ; seed * 214013
+ 184           	
+ 185           	    ; adiciona 2531011 (0x00269EC3) ao resultado
+ 186           	    ; para 64 bits, é preciso carry
+ 187 00D4 32 6C	    MOV R2, #0xC3   ; Parte inferior
+ 188 00D6 E2 79	    MOVT R2, #0x9E  ; Parte superior
+ 189 00D8 63 62	    MOV R3, #0x26   ; Parte inferior
+ 190 00DA 00 81	    ADD R0, R0, R2
+ 191 00DC 91 91	    ADC R1, R1, R3
+ 192           	
+ 193           	    ; atualiza seed
+ 194 00DE E4 0C	    LDR R4, seed_addr
+ 195 00E0 40 20	    STR R0, [R4]    ; Parte inferior
+ 196 00E2 41 21	    STR R1, [R4, #4]    ; Parte superior
+ 197           	
+ 198           	    ; retorna o resultado (seed >> 16)
+ 199 00E4 80 B0	    MOV R0, R1      ; retorna os 16 bits superiores
+ 200           	
+ 201 00E6 04 04	    POP R4
+ 202 00E8 03 04	    POP R3
+ 203 00EA 02 04	    POP R2
+ 204 00EC 01 04	    POP R1
+ 205 00EE 00 04	    POP R0
+ 206 00F0 0F 04	    POP PC          ; retorna
+ 207           	
+ 208           	main:
+ 209 00F2 00 60	    MOV R0, #0
+ 210 00F4 21 63	    MOV R1, #50
+ 211 00F6 02 60	    MOV R2, #0
+ 212 00F8 23 63	    MOV R3, #50
+ 213 00FA C3 5F	    BL umull32
+ 214           	
+ 215           	seed_addr:
+ 216 00FC 0A 01	    .word seed
+ 217           	
+ 218           	.data
+ 219           	
+ 220           	N:  
+ 221 00FE 05 00	    .word 5
+ 222           	
+ 223           	result: 
+ 224 0100 53 45	    .word 17747
+ 225 0102 07 08	    .word 2055
+ 226 0104 50 0E	    .word 3664
+ 227 0106 FB 3C	    .word 15611
+ 228 0108 58 26	    .word 9816
+ 229           	
+ 230           	seed:
+ 231 010A 01 00	    .word 1     ; LSB
+ 232 010C 00 00	    .word 0     ; MSB
+ 233           	    
+ 234           	/*
+ 235           	214013:
+ 236           	    .word 0x43_FD    ; Parte inferior
+ 237           	    .word 0x00_03    ; Parte superior
+ 238           	*/
+ 239           	/*
+ 240           	2531011:
+ 241           	    .word 0x9E_C3    ; Parte inferior
+ 242           	    .word 0x00_26    ; Parte superior
+ 243           	*/
+ 244           	; verificar RAND_MAX para 32 bits (0xFFFFFFFF), como fica?
+ 245           	RAND_MAX:
+ 246 010E FF FF	    .word 0xFFFF
+ 246           	

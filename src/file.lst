@@ -1,0 +1,157 @@
+P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\file.lst	Wed Mar 26 21:20:16 2025
+
+Sections
+Index   Name            Address   Size
+0       .text           0000      00A0 160
+
+Symbols
+Name                    Type      Value       Section
+line#137                LABEL     009E 158    .text
+main                    LABEL     0094 148    .text
+umull32                 LABEL     0068 104    .text
+umull32_else_if         LABEL     0030 48     .text
+umull32_end_if          LABEL     0044 68     .text
+umull32_if              LABEL     0002 2      .text
+umull32_while           LABEL     004A 74     .text
+umull32_while_begin     LABEL     0046 70     .text
+umull32_while_end       LABEL     0066 102    .text
+
+Code listing
+   1 0000 49 58	B main
+   2           	    
+   3           	umull32_if:
+   4           	    ;   \/ R7 for comparison with 0
+   5 0002 07 60	    MOV R7, #0
+   6           	
+   7           	    ; Compare R5&1 == 0
+   8 0004 18 60	    MOV R8, #1
+   9 0006 58 C4	    AND R8, R5, R8 ; R5 and 1 => R8
+  10 0008 70 BC	    CMP R7, R8 ; R5 and 1 == 0
+  11 000A 12 44	    BNE umull32_else_if
+  12           	    
+  13           	    ; Compare R4&1 == 0
+  14 000C 18 60	    MOV R8, #1
+  15 000E 48 C4	    AND R8, R4, R8 ; R4 and 1 => R8
+  16 0010 70 BC	    CMP R7, R8 ; R4 and 1 == 0
+  17 0012 0E 44	    BNE umull32_else_if
+  18           	
+  19           	    ; Compare R3&1 == 0
+  20 0014 18 60	    MOV R8, #1
+  21 0016 38 C4	    AND R8, R3, R8 ; R3 and 1 => R8
+  22 0018 70 BC	    CMP R7, R8 ; R3 and 1 == 0
+  23 001A 0A 44	    BNE umull32_else_if
+  24           	
+  25           	    ; Compare R2&1 == 0
+  26 001C 18 60	    MOV R8, #1
+  27 001E 28 C4	    AND R8, R2, R8 ; R2 and 1 => R8
+  28 0020 70 BC	    CMP R7, R8 ; R2 and 1 == 0
+  29 0022 06 44	    BNE umull32_else_if
+  30           	
+  31           	    ; Compare p_1 == 1
+  32 0024 18 60	    MOV R8, #1
+  33 0026 60 BC	    CMP R6, R8 ; R6 == 1
+  34 0028 03 44	    BNE umull32_else_if
+  35           	
+  36 002A 93 81	    ADD R3, R1, R3
+  37 002C 02 91	    ADC R2, R0, R2
+  38           	
+  39 002E 0A 58	    B umull32_end_if
+  40           	
+  41           	umull32_else_if:
+  42           	    ;   \/ R7 for comparison with 1
+  43 0030 17 60	    MOV R7, #1
+  44           	    
+  45           	    ; Compare R5&1 == 1
+  46 0032 18 60	    MOV R8, #1
+  47 0034 58 C4	    AND R8, R5, R8 ; R5 and 1 => R8
+  48 0036 70 BC	    CMP R7, R8 ; R5 and 1 == 1
+  49 0038 05 44	    BNE umull32_end_if
+  50           	
+  51           	    ; Compare p_1 == 0
+  52 003A 08 60	    MOV R8, #0
+  53 003C 60 BC	    CMP R6, R8 ; R6 == 0
+  54 003E 02 44	    BNE umull32_end_if
+  55           	
+  56 0040 22 88	    SUB R2, R2, R0
+  57 0042 B3 98	    SBC R3, R3, R1
+  58           	
+  59           	umull32_end_if:
+  60 0044 0F B7	    MOV PC, LR
+  61           	
+  62           	umull32_while_begin:
+  63 0046 07 60	    MOV R7, #0 ; i = 0
+  64 0048 0E 24	    PUSH LR
+  65           	
+  66           	umull32_while:
+  67 004A 08 62	    MOV R8, #32
+  68 004C 70 BC	    CMP R7, R8
+  69 004E 0B 40	    BEQ umull32_while_end
+  70           	
+  71 0050 07 24	    PUSH R7 ; Usar o índice como complemento à variável temporária.
+  72 0052 D7 5F	    BL umull32_if
+  73 0054 07 04	    POP R7
+  74           	
+  75           	    ; p_1 = result&1
+  76 0056 18 60	    MOV R8, #1
+  77 0058 56 C4	    AND R6, R5, R8
+  78           	
+  79           	    ; result = result >> 1
+  80 005A A2 E8	    lSR R2, R2, #1
+  81 005C 33 D8	    RRX R3, R3
+  82 005E 44 D8	    RRX R4, R4
+  83 0060 55 D8	    RRX R5, R5
+  84           	
+  85 0062 F7 A0	    ADD R7, R7, #1 ; Incremento (i++)
+  86 0064 F2 5B	    B umull32_while
+  87           	
+  88           	umull32_while_end:
+  89 0066 0F 04	    POP PC
+  90           	
+  91           	umull32:
+  92 0068 0E 24	    PUSH LR
+  93 006A 04 24	    PUSH R4
+  94 006C 05 24	    PUSH R5
+  95 006E 06 24	    PUSH R6
+  96 0070 07 24	    PUSH R7
+  97 0072 08 24	    PUSH R8
+  98           	    ; -------- IN --------
+  99           	    ; R0, R1 => M
+ 100           	    ; R2, R3 => m
+ 101           	    ;
+ 102           	    ; ------- OUT -------
+ 103           	    ; R0, R1, R2, R3 => p
+ 104           	    ;
+ 105           	    ; ----- INTERNAL -----
+ 106           	    ; R2, R3, R4, R5 => Resultado
+ 107           	    ; R6 => p_1
+ 108           	    ; R7 => i/TEMP
+ 109           	    
+ 110 0074 85 B1	    MOV R5, R3
+ 111 0076 04 B1	    MOV R4, R2
+ 112 0078 03 60	    MOV R3, #0
+ 113 007A 02 60	    MOV R2, #0
+ 114           	
+ 115 007C 06 60	    MOV R6, #0 ; p_1 = 0
+ 116           	
+ 117 007E E3 5F	    BL umull32_while_begin
+ 118           	
+ 119 0080 00 B1	    MOV R0, R2
+ 120 0082 81 B1	    MOV R1, R3
+ 121 0084 02 B2	    MOV R2, R4
+ 122 0086 83 B2	    MOV R3, R5
+ 123           	    
+ 124 0088 08 04	    POP R8
+ 125 008A 07 04	    POP R7
+ 126 008C 06 04	    POP R6
+ 127 008E 05 04	    POP R5
+ 128 0090 04 04	    POP R4
+ 129 0092 0F 04	    POP PC
+ 130           	
+ 131           	main:
+ 132 0094 00 60	    MOV R0, #0
+ 133 0096 21 60	    MOV R1, #2
+ 134 0098 02 60	    MOV R2, #0
+ 135 009A 23 60	    MOV R3, #2
+ 136 009C E5 5F	    BL umull32
+ 137 009E FF 5B	    b .
+ 137           	
