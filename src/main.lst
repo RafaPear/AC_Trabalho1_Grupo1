@@ -1,270 +1,270 @@
-P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\main.lst	Thu Mar 27 01:44:20 2025
+P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\main.lst	Fri Mar 28 10:26:42 2025
 
 Sections
 Index   Name            Address   Size
-0       .text           0000      00F4 244
-1       .data           00F4      0016 22
-2       .stack          010A      0007 7
+0       .text           0000      00F6 246
+1       .data           00F6      000E 14
+2       .stack          0104      0040 64
 
 Symbols
 Name                    Type      Value       Section
-error                   LABEL     00F0 240    .text
-line#6                  LABEL     0002 2      .text
-main                    LABEL     00C8 200    .text
-main_end_for_loop       LABEL     00F2 242    .text
-main_for_loop           LABEL     00D4 212    .text
-mod                     LABEL     007E 126    .text
-mod_end                 LABEL     0088 136    .text
-n                       LABEL     00F8 248    .data
-program                 LABEL     00C2 194    .text
+line#200                LABEL     00E0 224    .text
+line#211                LABEL     00F2 242    .text
+line#8                  LABEL     0002 2      .text
+main                    LABEL     00D0 208    .text
+main_for                LABEL     00DA 218    .text
+main_for_init           LABEL     00D8 216    .text
+mod                     LABEL     0074 116    .text
+mod_end                 LABEL     0084 132    .text
+mod_loop                LABEL     007E 126    .text
+N                       ABSOLUTE  0005 5      .text
+program                 LABEL     00CA 202    .text
 rand                    LABEL     008A 138    .text
-rand_max                LABEL     00FA 250    .data
-result                  LABEL     0100 256    .data
-result_addr             LABEL     00F4 244    .data
-seed                    LABEL     00FC 252    .data
-seed_addr               LABEL     00F6 246    .data
-srand                   LABEL     0072 114    .text
-STACK_SIZE              ABSOLUTE  0007 7      .text
-stack_top               LABEL     0111 273    .stack
-stack_top_addr          LABEL     00C6 198    .text
+RAND_MAX                ABSOLUTE  00FF 255    .text
+result                  LABEL     00F6 246    .data
+result_addr             LABEL     00F4 244    .text
+seed                    LABEL     0100 256    .data
+seed_addr               LABEL     00C8 200    .text
+srand                   LABEL     0068 104    .text
+STACK_SIZE              ABSOLUTE  0040 64     .text
+stack_top               LABEL     0144 324    .stack
+stack_top_addr          LABEL     00CE 206    .text
 umull32                 LABEL     0004 4      .text
-umull32_else_if         LABEL     003A 58     .text
+umull32_else_if         LABEL     0036 54     .text
 umull32_for             LABEL     001E 30     .text
-umull32_for_end         LABEL     005C 92     .text
+umull32_for_end         LABEL     0056 86     .text
 umull32_if              LABEL     0024 36     .text
-umull32_if_end          LABEL     004C 76     .text
+umull32_if_end          LABEL     0046 70     .text
 
 Code listing
-   1          	.equ STACK_SIZE, 7 ; Depois ver se é 64 ou não!
-   2           	
-   3           	    .text
+   1          	.equ STACK_SIZE, 64 ; Depois ver se é 64 ou não!
+   2          	.equ RAND_MAX, 0xFF
+   3          	.equ N, 5
    4           	
-   5 0000 60 58	    b   program
-   6 0002 FF 5B	    b . ; Reservado (ISR)
-   7           	
-   8           	    umull32:
-   9 0004 0E 24	        push lr
-  10 0006 04 24	        push r4
-  11 0008 05 24	        push r5
-  12 000A 06 24	        push r6
-  13 000C 07 24	        push r7
-  14 000E 08 24	        push r8
-  15 0010 09 24	        push r9
-  16           	
-  17           	        ; --------- IN ---------
-  18           	        ; R1, R0 => M
-  19           	        ; R3, R2 => m
-  20           	        ; -------- OUT ---------
-  21           	        ; R4, R3, R2, R1
-  22           	        ; ------ INTERNAL ------
-  23           	        ; r6 => TEMP_A
-  24           	        ; r7 => TEMP_B
-  25           	        ; r8 => p_1
-  26           	        ; r9 => i
-  27           	
-  28           	
-  29           	        ; Como o R3 e R2 já representam o N,
-  30           	        ; para fazer int64_t p = N apenas preciso
-  31           	        ; de colocar os restantes registos de maior peso
-  32           	        ; = 0, ou seja, R5 e R4 = 0
-  33 0012 04 60	        mov r4, #0
-  34 0014 05 60	        mov r5, #0
-  35           	
-  36 0016 06 60	        mov r6, #0 ; TEMP_A
-  37 0018 07 60	        mov r7, #0 ; TEMP_B
-  38 001A 08 60	        mov r8, #0 ; p_1
-  39 001C 09 60	        mov r9, #0 ; i
-  40           	    
-  41           	    umull32_for:
-  42 001E 06 62	        mov r6, #32
-  43 0020 E0 BC	        cmp r6, r9
-  44 0022 1C 40	        beq umull32_for_end
-  45           	
-  46           	    umull32_if:
-  47 0024 16 60	        mov r6, #1
-  48 0026 27 C3	        and r7, r2, r6
-  49 0028 06 60	        mov r6, #0
-  50 002A 70 BB	        cmp r7, r6
-  51 002C 06 44	        bne umull32_else_if
+   5           	    .text
+   6           	
+   7 0000 64 58	    b   program
+   8 0002 FF 5B	    b . ; Reservado (ISR)
+   9           	
+  10           	    umull32:
+  11 0004 0E 24	        push lr
+  12 0006 04 24	        push r4
+  13 0008 05 24	        push r5
+  14 000A 06 24	        push r6
+  15 000C 07 24	        push r7
+  16 000E 08 24	        push r8
+  17 0010 09 24	        push r9
+  18           	
+  19           	        ; --------- IN ---------
+  20           	        ; R1, R0 => M
+  21           	        ; R3, R2 => m
+  22           	        ; -------- OUT ---------
+  23           	        ; R4, R3, R2, R1
+  24           	        ; ------ INTERNAL ------
+  25           	        ; r6 => TEMP_A
+  26           	        ; r7 => TEMP_B
+  27           	        ; r8 => p_1
+  28           	        ; r9 => i
+  29           	
+  30           	
+  31           	        ; Como o R3 e R2 já representam o N,
+  32           	        ; para fazer int64_t p = N apenas preciso
+  33           	        ; de colocar os restantes registos de maior peso
+  34           	        ; = 0, ou seja, R5 e R4 = 0
+  35 0012 04 60	        mov r4, #0
+  36 0014 05 60	        mov r5, #0
+  37           	
+  38 0016 06 60	        mov r6, #0 ; TEMP_A
+  39 0018 07 60	        mov r7, #0 ; TEMP_B
+  40 001A 08 60	        mov r8, #0 ; p_1
+  41 001C 09 60	        mov r9, #0 ; i
+  42           	    
+  43           	    umull32_for:
+  44 001E 06 62	        mov r6, #32
+  45 0020 E0 BC	        cmp r6, r9
+  46 0022 19 40	        beq umull32_for_end
+  47           	
+  48           	    umull32_if:
+  49 0024 16 60	        mov r6, #1
+  50 0026 27 C3	        and r7, r2, r6
+  51 0028 06 44	        bzc umull32_else_if
   52           	
-  53 002E 16 60	        mov r6, #1
-  54 0030 60 BC	        cmp r6, r8
-  55 0032 03 44	        bzc umull32_else_if
+  53 002A 16 60	        mov r6, #1
+  54 002C 60 BC	        cmp r6, r8
+  55 002E 03 44	        bzc umull32_else_if
   56           	
-  57 0034 44 80	        add r4, r4, r0
-  58 0036 D5 90	        adc r5, r5, r1
+  57 0030 44 80	        add r4, r4, r0
+  58 0032 D5 90	        adc r5, r5, r1
   59           	
-  60 0038 09 58	        b umull32_if_end
+  60 0034 08 58	        b umull32_if_end
   61           	
   62           	    umull32_else_if:
   63           	
-  64 003A 16 60	        mov r6, #1
-  65 003C 27 C3	        and r7, r2, r6
-  66 003E 70 BB	        cmp r7, r6
-  67 0040 05 44	        bne umull32_if_end
-  68           	
-  69 0042 06 60	        mov r6, #0
-  70 0044 60 BC	        cmp r6, r8
-  71 0046 02 44	        bzc umull32_if_end
-  72           	
-  73 0048 44 88	        sub r4, r4, r0
-  74 004A D5 98	        sbc r5, r5, r1
-  75           	
-  76           	    umull32_if_end:
-  77           	
-  78 004C 16 60	        mov r6, #1
-  79 004E 28 C3	        and r8, r2, r6
-  80           	
-  81 0050 D5 F0	        asr r5, r5, #1
-  82 0052 44 D8	        rrx r4, r4
-  83 0054 33 D8	        rrx r3, r3
-  84 0056 22 D8	        rrx r2, r2
-  85           	
-  86 0058 E9 84	        add r9, r6, r9
-  87 005A E1 5B	        b umull32_for
-  88           	
-  89           	    umull32_for_end:
-  90 005C 00 B1	        mov r0, r2
-  91 005E 81 B1	        mov r1, r3
-  92 0060 02 B2	        mov r2, r4
-  93 0062 83 B2	        mov r3, r5
-  94           	
-  95 0064 09 04	        pop r9
-  96 0066 08 04	        pop r8
-  97 0068 07 04	        pop r7
-  98 006A 06 04	        pop r6
-  99 006C 05 04	        pop r5
- 100 006E 04 04	        pop r4
- 101 0070 0F 04	        pop pc
- 102           	
- 103           	    srand:
- 104 0072 04 24	        push r4
- 105           	        ;ldr r4, seed_addr (dava: error! intervalo entre pc e target address: +132 (0x84), isn't codable with 7 bit)
- 106           	        ;solução: carregar o address da seed para r4, diretamente e depois dar load para r4
- 107 0074 64 6F	        mov r4, #seed_addr
- 108 0076 40 20	        str r0, [r4]
- 109 0078 C1 20	        str r1, [r4, #2]
- 110 007A 04 04	        pop r4
- 111 007C 0F B7	        mov pc, lr
- 112           	
- 113           	    mod:
- 114 007E 90 B9	        cmp r1, R3
- 115 0080 03 48	        bhs mod_end
- 116 0082 00 89	        sub r0, r0, r2
- 117 0084 91 99	        sbc r1, r1, r3
- 118 0086 FB 5B	        b mod
- 119           	    mod_end:
- 120 0088 0F B7	        mov pc, lr
- 121           	
- 122           	    rand:
- 123 008A 0E 24	        push lr
- 124 008C 01 24	        push r1
- 125 008E 02 24	        push r2
- 126 0090 03 24	        push r3
- 127 0092 04 24	        push r4
- 128           	        ; seed atual (32 bits) -> r0 e r1
- 129 0094 64 6F	        mov r4, #seed_addr
- 130 0096 40 00	        ldr r0, [r4]    ; parte inferior
- 131 0098 C1 00	        ldr r1, [r4, #2]    ; parte superior
- 132           	
- 133           	        ; prepara para umull32: seed * 214013
- 134           	        ; 214013 = 0x000343FD (32 bits)
- 135 009A D2 6F	        mov r2, #0xFD   ; parte inferior
- 136 009C 32 74	        movt r2, #0x43  ; parte superior
- 137 009E 33 60	        mov r3, #0x03   ; parte inferior
- 138 00A0 B1 5F	        bl umull32  ; seed * 214013
- 139           	
- 140           	        ; adiciona 2531011 (0x00269EC3) ao resultado
- 141           	        ; para 64 bits, é preciso carry
- 142 00A2 32 6C	        mov r2, #0xC3   ; parte inferior
- 143 00A4 E2 79	        movt r2, #0x9E  ; parte superior
- 144 00A6 63 62	        mov r3, #0x26   ; parte inferior
- 145 00A8 00 81	        add r0, r0, r2
- 146 00AA 91 91	        adc r1, r1, r3
- 147 00AC 42 00	        ldr r2, [r4]
- 148 00AE C3 00	        ldr r3, [r4, #2]
- 149           	
- 150 00B0 E6 5F	        bl mod
- 151           	
- 152           	        ; atualiza seed
- 153 00B2 40 20	        str r0, [r4]    ; parte inferior
- 154 00B4 C1 20	        str r1, [r4, #2]    ; parte superior
+  64 0036 16 60	        mov r6, #1
+  65 0038 27 C3	        and r7, r2, r6
+  66 003A 05 40	        bzs umull32_if_end
+  67           	
+  68 003C 06 60	        mov r6, #0
+  69 003E 60 BC	        cmp r6, r8
+  70 0040 02 44	        bzc umull32_if_end
+  71           	
+  72 0042 44 88	        sub r4, r4, r0
+  73 0044 D5 98	        sbc r5, r5, r1
+  74           	
+  75           	    umull32_if_end:
+  76           	
+  77 0046 16 60	        mov r6, #1
+  78 0048 28 C3	        and r8, r2, r6
+  79           	
+  80 004A D5 F0	        asr r5, r5, #1
+  81 004C 44 D8	        rrx r4, r4
+  82 004E 33 D8	        rrx r3, r3
+  83 0050 22 D8	        rrx r2, r2
+  84           	
+  85 0052 E9 84	        add r9, r6, r9
+  86 0054 E4 5B	        b umull32_for
+  87           	
+  88           	    umull32_for_end:
+  89 0056 00 B1	        mov r0, r2
+  90 0058 81 B1	        mov r1, r3
+  91           	
+  92 005A 09 04	        pop r9
+  93 005C 08 04	        pop r8
+  94 005E 07 04	        pop r7
+  95 0060 06 04	        pop r6
+  96 0062 05 04	        pop r5
+  97 0064 04 04	        pop r4
+  98 0066 0F 04	        pop pc
+  99           	
+ 100           	    srand:
+ 101 0068 04 24	        push r4
+ 102 006A E4 0E	        ldr r4, seed_addr
+ 103 006C 40 20	        str r0, [r4]
+ 104 006E C1 20	        str r1, [r4, #2]
+ 105 0070 04 04	        pop r4
+ 106 0072 0F B7	        mov pc, lr
+ 107           	
+ 108           	    mod:
+ 109 0074 04 24	        push r4
+ 110 0076 05 24	        push r5
+ 111 0078 04 89	        sub r4, r0, r2
+ 112 007A 95 99	        sbc r5, r1, r3
+ 113 007C 03 4C	        bcc mod_end
+ 114           	    mod_loop:
+ 115 007E 00 89	        sub r0, r0, r2
+ 116 0080 91 99	        sbc r1, r1, r3
+ 117 0082 FD 4B	        bcs mod_loop
+ 118           	    mod_end:
+ 119 0084 05 04	        pop r5
+ 120 0086 04 04	        pop r4
+ 121 0088 0F B7	        mov pc, lr
+ 122           	
+ 123           	    rand:
+ 124 008A 0E 24	        push lr
+ 125 008C 01 24	        push r1
+ 126 008E 02 24	        push r2
+ 127 0090 03 24	        push r3
+ 128 0092 04 24	        push r4
+ 129 0094 05 24	        push r5
+ 130           	
+ 131 0096 84 0D	        ldr r4, seed_addr
+ 132 0098 F5 6F	        mov r5, #RAND_MAX
+ 133 009A F5 7F	        movt r5, #RAND_MAX
+ 134           	
+ 135 009C 40 00	        ldr r0, [r4]
+ 136 009E C1 00	        ldr r1, [r4, #2]
+ 137           	
+ 138           	        ; prepara para umull32: seed * 214013
+ 139           	        ; 214013 = 0x000343FD (32 bits)
+ 140 00A0 D2 6F	        mov r2, #0xFD   ; parte inferior
+ 141 00A2 32 74	        movt r2, #0x43  ; parte superior
+ 142 00A4 33 60	        mov r3, #0x03   ; parte inferior
+ 143 00A6 AE 5F	        bl umull32  ; seed * 214013
+ 144           	
+ 145           	        ; adiciona 2531011 (0x00269EC3) ao resultado
+ 146           	        ; para 64 bits, é preciso carry
+ 147 00A8 32 6C	        mov r2, #0xC3   ; parte inferior
+ 148 00AA E2 79	        movt r2, #0x9E  ; parte superior
+ 149 00AC 63 62	        mov r3, #0x26   ; parte inferior
+ 150 00AE 00 81	        add r0, r0, r2
+ 151 00B0 91 91	        adc r1, r1, r3
+ 152           	
+ 153 00B2 82 B2	        mov r2, r5
+ 154 00B4 83 B2	        mov r3, r5
  155           	
- 156           	        ; retorna o resultado (seed >> 16)
- 157 00B6 80 B0	        mov r0, r1     ; retorna os 16 bits superiores
+ 156 00B6 DE 5F	        bl mod
+ 157 00B8 D7 5F	        bl srand
  158           	
- 159 00B8 04 04	        pop r4
- 160 00BA 03 04	        pop r3
- 161 00BC 02 04	        pop r2
- 162 00BE 01 04	        pop r1
- 163 00C0 0F 04	        pop pc    ; retorna
- 164           	
- 165           	program:
- 166 00C2 1D 0C	    ldr sp, stack_top_addr
- 167 00C4 01 58	    b main
- 168           	stack_top_addr:
- 169 00C6 11 01	    .word stack_top
+ 159           	        ; retorna o resultado (seed >> 16)
+ 160 00BA 80 B0	        mov r0, r1     ; retorna os 16 bits superiores
+ 161           	        
+ 162 00BC 05 04	        pop r5
+ 163 00BE 04 04	        pop r4
+ 164 00C0 03 04	        pop r3
+ 165 00C2 02 04	        pop r2
+ 166 00C4 01 04	        pop r1
+ 167 00C6 0F 04	        pop pc    ; retorna
+ 168           	
+ 169 00C8 00 01	    seed_addr: .word seed
  170           	
- 171           	main:
- 172 00C8 07 60	    mov r7, #0  ; r7 = error = 0
- 173 00CA 04 60	    mov r4, #0  ; r4 = i = 0
- 174           	
- 175           	    ; srand(5423)
- 176           	    ; 5423 = 0x152F (16 bits)
- 177 00CC F0 62	    mov r0, #0x2F   ; parte inferior
- 178 00CE 50 71	    movt r0, #0x15  ; parte superior
- 179 00D0 01 60	    mov r1, #0  ; parte superior (só zeros)
- 180 00D2 CF 5F	    bl srand
- 181           	
- 182           	main_for_loop:
- 183           	    ; for (i = 0; error == 0 && i < n; i++)
- 184           	    ; error == 0 && i < n
- 185 00D4 05 60	    mov r5, #0 ; r5 = 0
- 186 00D6 F0 BA	    cmp r7, r5  ; error == 0
- 187 00D8 0C 44	    bne main_end_for_loop   ; se error != 0, dá break
- 188           	
- 189           	    ; load no n para a comparação (i < n)
- 190 00DA 85 6F	    mov r5, #n
- 191 00DC C0 BA	    cmp r4, r5  ; i < n
- 192 00DE 09 50	    bge main_end_for_loop   ; se i >= n, dá break
- 193           	
- 194 00E0 D4 5F	    bl rand     ; rand() -> retorna em r0 = rand_number
- 195           	
- 196           	    ; result[i] = rand_number (result é um array de uint16_t [2 bytes cada elemento] -> offset = i * 2)
- 197 00E2 45 6F	    mov r5, #result_addr
- 198 00E4 C6 E0	    lsl r6, r4, #1 ; r6 = i * 2
- 199 00E6 D6 00	    ldr r6, [r5, #2] ; r6 = result[i]
- 200           	
- 201 00E8 00 BB	    cmp r0, r6 ; compara result[i] com rand_number
- 202 00EA 02 44	    bne error
- 203 00EC C4 A0	    add r4, r4, #1  ; i++
- 204 00EE F2 5B	    b main_for_loop
- 205           	
- 206           	error:
- 207 00F0 17 60	    mov r7, #1  ; error = 1 se forem diferentes
- 208           	
- 209           	main_end_for_loop:
- 210 00F2 80 B3	    mov r0, r7  ; r0 = error
- 211           	
- 212           	    .data  ; Variáveis globais
- 213 00F4 00 01	    result_addr: .word result
+ 171           	
+ 172           	program:
+ 173 00CA 1D 0C	    ldr sp, stack_top_addr
+ 174 00CC 01 58	    b main
+ 175           	stack_top_addr:
+ 176 00CE 44 01	    .word stack_top
+ 177           	
+ 178           	main:
+ 179           	    ; -------- Variáveis --------
+ 180           	    ; r0 => rand_number / erro
+ 181           	    ; r4 => TEMP_A r3
+ 182           	    ; r5 => TEMP_B r4
+ 183           	    ; r6 => i r2
+ 184           	
+ 185           	    ; Parametros para o Srand
+ 186 00D0 F0 62	    mov r0, #0x2F  ; r0 = 47
+ 187 00D2 50 71	    movt r0, #0x15 ; r0 = 5423
+ 188 00D4 01 60	    mov r1, #0     ; r1 = 0
+ 189           	
+ 190 00D6 C8 5F	    bl srand
+ 191           	
+ 192           	main_for_init:
+ 193 00D8 06 60	    mov r6, #0 ; i = 0
+ 194           	main_for:
+ 195 00DA 54 60	    mov r4, #N
+ 196 00DC 60 BA	    cmp r6, r4 ; i < N
+ 197           	    ; predefine r0 = 0 para error = 0 caso
+ 198           	    ; a condicao se verifique
+ 199 00DE 00 60	    mov r0, #0
+ 200 00E0 FF 4B	    bhs .
+ 201           	
+ 202 00E2 D3 5F	    bl rand ; r0 = rand_number
+ 203           	    
+ 204 00E4 74 0C	    ldr r4, result_addr
+ 205 00E6 E5 E0	    lsl r5, r6, #1 ; i * 2 para indexar corretamente
+ 206 00E8 C5 12	    ldr r5, [r4, r5]
+ 207 00EA E6 A0	    add r6, r6, #1
+ 208 00EC 80 BA	    cmp r0, r5
+ 209 00EE F5 43	    bzs main_for
+ 210 00F0 10 60	    mov r0, #1
+ 211 00F2 FF 5B	    b .
+ 212           	
+ 213 00F4 F6 00	    result_addr: .word result
  214           	
- 215 00F6 FC 00	    seed_addr: .word seed
+ 215           	    .data  ; Variáveis globais
  216           	
- 217 00F8 05 00	    n: .word 5
- 218           	
- 219 00FA FF FF	    rand_max: .word 0xFFFF
- 220           	
- 221          	    seed: .word 1, 0
- 221 00FC 01 00 00 00
+ 217           	    result:
+ 218          	        .word 17747, 2055, 3664, 15611, 981
+ 218 00F6 53 45 07 08 50 0E FB 3C D5 03
+ 219           	    
+ 220           	    seed:
+ 221          	        .word 1, 0
+ 221 0100 01 00 00 00
  222           	
- 223          	    result: .word 0x4553, 0x807, 0xE50, 0x3CFB, 0x2658
- 223 0100 53 45 07 08 50 0E FB 3C 58 26
+ 223           	    .stack
  224           	
- 225           	    .stack
+ 225 0104 00   	    .space  STACK_SIZE
+ 225 .... ..
+ 225 0143 00
+ 226           	stack_top:
  226           	
- 227 010A 00   	    .space  STACK_SIZE
- 227 .... ..
- 227 0110 00
- 228           	stack_top:
- 228           	

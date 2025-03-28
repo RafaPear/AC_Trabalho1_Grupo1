@@ -1,4 +1,6 @@
-.equ STACK_SIZE, 7 ; Depois ver se é 64 ou não!
+.equ STACK_SIZE, 64 ; Depois ver se é 64 ou não!
+.equ RAND_MAX, 0xFF
+.equ N, 5
 
     .text
 
@@ -46,9 +48,7 @@
     umull32_if:
         mov r6, #1
         and r7, r2, r6
-        mov r6, #0
-        cmp r7, r6
-        bne umull32_else_if
+        bzc umull32_else_if
 
         mov r6, #1
         cmp r6, r8
@@ -63,8 +63,7 @@
 
         mov r6, #1
         and r7, r2, r6
-        cmp r7, r6
-        bne umull32_if_end
+        bzs umull32_if_end
 
         mov r6, #0
         cmp r6, r8
@@ -89,8 +88,6 @@
     umull32_for_end:
         mov r0, r2
         mov r1, r3
-        mov r2, r4
-        mov r3, r5
 
         pop r9
         pop r8
@@ -102,21 +99,25 @@
 
     srand:
         push r4
-        ;ldr r4, seed_addr (dava: error! intervalo entre pc e target address: +132 (0x84), isn't codable with 7 bit)
-        ;solução: carregar o address da seed para r4, diretamente e depois dar load para r4
-        mov r4, #seed_addr
+        ldr r4, seed_addr
         str r0, [r4]
         str r1, [r4, #2]
         pop r4
         mov pc, lr
 
     mod:
-        cmp r1, R3
-        bhs mod_end
+        push r4
+        push r5
+        sub r4, r0, r2
+        sbc r5, r1, r3
+        bcc mod_end
+    mod_loop:
         sub r0, r0, r2
         sbc r1, r1, r3
-        b mod
+        bcs mod_loop
     mod_end:
+        pop r5
+        pop r4
         mov pc, lr
 
     rand:
@@ -125,10 +126,14 @@
         push r2
         push r3
         push r4
-        ; seed atual (32 bits) -> r0 e r1
-        mov r4, #seed_addr
-        ldr r0, [r4]    ; parte inferior
-        ldr r1, [r4, #2]    ; parte superior
+        push r5
+
+        ldr r4, seed_addr
+        mov r5, #RAND_MAX
+        movt r5, #RAND_MAX
+
+        ldr r0, [r4]
+        ldr r1, [r4, #2]
 
         ; prepara para umull32: seed * 214013
         ; 214013 = 0x000343FD (32 bits)
@@ -144,23 +149,25 @@
         mov r3, #0x26   ; parte inferior
         add r0, r0, r2
         adc r1, r1, r3
-        ldr r2, [r4]
-        ldr r3, [r4, #2]
+
+        mov r2, r5
+        mov r3, r5
 
         bl mod
-
-        ; atualiza seed
-        str r0, [r4]    ; parte inferior
-        str r1, [r4, #2]    ; parte superior
+        bl srand
 
         ; retorna o resultado (seed >> 16)
         mov r0, r1     ; retorna os 16 bits superiores
-
+        
+        pop r5
         pop r4
         pop r3
         pop r2
         pop r1
         pop pc    ; retorna
+
+    seed_addr: .word seed
+
 
 program:
     ldr sp, stack_top_addr
@@ -169,58 +176,49 @@ stack_top_addr:
     .word stack_top
 
 main:
-    mov r7, #0  ; r7 = error = 0
-    mov r4, #0  ; r4 = i = 0
+    ; -------- Variáveis --------
+    ; r0 => rand_number / erro
+    ; r4 => TEMP_A r3
+    ; r5 => TEMP_B r4
+    ; r6 => i r2
 
-    ; srand(5423)
-    ; 5423 = 0x152F (16 bits)
-    mov r0, #0x2F   ; parte inferior
-    movt r0, #0x15  ; parte superior
-    mov r1, #0  ; parte superior (só zeros)
+    ; Parametros para o Srand
+    mov r0, #0x2F  ; r0 = 47
+    movt r0, #0x15 ; r0 = 5423
+    mov r1, #0     ; r1 = 0
+
     bl srand
 
-main_for_loop:
-    ; for (i = 0; error == 0 && i < n; i++)
-    ; error == 0 && i < n
-    mov r5, #0 ; r5 = 0
-    cmp r7, r5  ; error == 0
-    bne main_end_for_loop   ; se error != 0, dá break
+main_for_init:
+    mov r6, #0 ; i = 0
+main_for:
+    mov r4, #N
+    cmp r6, r4 ; i < N
+    ; predefine r0 = 0 para error = 0 caso
+    ; a condicao se verifique
+    mov r0, #0
+    bhs .
 
-    ; load no n para a comparação (i < n)
-    mov r5, #n
-    cmp r4, r5  ; i < n
-    bge main_end_for_loop   ; se i >= n, dá break
+    bl rand ; r0 = rand_number
+    
+    ldr r4, result_addr
+    lsl r5, r6, #1 ; i * 2 para indexar corretamente
+    ldr r5, [r4, r5]
+    add r6, r6, #1
+    cmp r0, r5
+    bzs main_for
+    mov r0, #1
+    b .
 
-    bl rand     ; rand() -> retorna em r0 = rand_number
-
-    ; result[i] = rand_number (result é um array de uint16_t [2 bytes cada elemento] -> offset = i * 2)
-    mov r5, #result_addr
-    lsl r6, r4, #1 ; r6 = i * 2
-    ldr r6, [r5, #2] ; r6 = result[i]
-
-    cmp r0, r6 ; compara result[i] com rand_number
-    bne error
-    add r4, r4, #1  ; i++
-    b main_for_loop
-
-error:
-    mov r7, #1  ; error = 1 se forem diferentes
-
-main_end_for_loop:
-    mov r0, r7  ; r0 = error
-
-    .data  ; Variáveis globais
     result_addr: .word result
 
-    seed_addr: .word seed
+    .data  ; Variáveis globais
 
-    n: .word 5
-
-    rand_max: .word 0xFFFF
-
-    seed: .word 1, 0
-
-    result: .word 0x4553, 0x807, 0xE50, 0x3CFB, 0x2658
+    result:
+        .word 17747, 2055, 3664, 15611, 981
+    
+    seed:
+        .word 1, 0
 
     .stack
 

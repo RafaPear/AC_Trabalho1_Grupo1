@@ -41,12 +41,14 @@ int main(void) {
     uint16_t i;
 
     srand(5423);
+    printf("Seed: %d\n", seed);
     for (i = 0; error == 0 && i < N; i++) {
+        printf("umull32: %d\n", (umull32(seed, 214013) + 2531011));
         rand_number = rand();
+        printf("Seed: %d\n", seed);
         if (rand_number != result[i]) {
-            error = 1;
+            break;
         }
-        printf("rand_number: %d\n", rand_number);
     }
-    return error;
+    return 0;
 }
