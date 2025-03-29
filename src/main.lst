@@ -1,10 +1,10 @@
-P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\main.lst	Fri Mar 28 10:26:42 2025
+P16 assembler v1.5 (Feb  9 2024)	d:\1-ISEL\Semestre_2\AC\Trabalhos\AC_Trabalho1_Grupo1\src\main.lst	Sat Mar 29 00:02:41 2025
 
 Sections
 Index   Name            Address   Size
 0       .text           0000      00F6 246
 1       .data           00F6      000E 14
-2       .stack          0104      0040 64
+2       .stack          0104      0028 40
 
 Symbols
 Name                    Type      Value       Section
@@ -26,8 +26,8 @@ result_addr             LABEL     00F4 244    .text
 seed                    LABEL     0100 256    .data
 seed_addr               LABEL     00C8 200    .text
 srand                   LABEL     0068 104    .text
-STACK_SIZE              ABSOLUTE  0040 64     .text
-stack_top               LABEL     0144 324    .stack
+STACK_SIZE              ABSOLUTE  0028 40     .text
+stack_top               LABEL     012C 300    .stack
 stack_top_addr          LABEL     00CE 206    .text
 umull32                 LABEL     0004 4      .text
 umull32_else_if         LABEL     0036 54     .text
@@ -37,7 +37,7 @@ umull32_if              LABEL     0024 36     .text
 umull32_if_end          LABEL     0046 70     .text
 
 Code listing
-   1          	.equ STACK_SIZE, 64 ; Depois ver se é 64 ou não!
+   1          	.equ STACK_SIZE, 40
    2          	.equ RAND_MAX, 0xFF
    3          	.equ N, 5
    4           	
@@ -212,7 +212,7 @@ Code listing
  173 00CA 1D 0C	    ldr sp, stack_top_addr
  174 00CC 01 58	    b main
  175           	stack_top_addr:
- 176 00CE 44 01	    .word stack_top
+ 176 00CE 2C 01	    .word stack_top
  177           	
  178           	main:
  179           	    ; -------- Variáveis --------
@@ -265,6 +265,6 @@ Code listing
  224           	
  225 0104 00   	    .space  STACK_SIZE
  225 .... ..
- 225 0143 00
+ 225 012B 00
  226           	stack_top:
  226           	

@@ -1,4 +1,4 @@
-.equ STACK_SIZE, 64 ; Depois ver se é 64 ou não!
+.equ STACK_SIZE, 40
 .equ RAND_MAX, 0xFF
 .equ N, 5
 
